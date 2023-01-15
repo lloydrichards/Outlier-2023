@@ -7,7 +7,7 @@
       body {
         margin: 0;
       }
-      #canvas {
+      #bg {
         position: fixed;
         top: 0;
         left: 0;
@@ -19,8 +19,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
   </head>
   <body>
-    <h1 class="text-3xl font-bold text-slate-700">Hello</h1>
-    <canvas id="canvas"></canvas>
+    <div class="h-[200vh]"></div>
+    <h1 class="text-3xl font-bold text-white">Hello</h1>
+    <canvas id="bg"></canvas>
     <!--  Our code  -->
     <script>
       // ------------------------------------------------
@@ -39,18 +40,17 @@
       );
       camera.position.z = 4;
 
-      const canvas = document.getElementById("canvas");
-
       // Create a renderer with Antialiasing
       var renderer = new THREE.WebGLRenderer({
         antialias: true,
-        canvas: canvas,
+        canvas: document.getElementById("bg"),
       });
 
       // Configure renderer clear color
-      renderer.setClearColor("#e5e5e5");
+      renderer.setClearColor("#231f20");
 
       // Configure renderer size
+      renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(window.innerWidth, window.innerHeight);
 
       // ------------------------------------------------
@@ -58,19 +58,144 @@
       // ------------------------------------------------
 
       // Create a Cube Mesh with basic material
-      var geometry = new THREE.BoxGeometry(1, 1, 1);
-      var material = new THREE.MeshBasicMaterial({ color: "#433F81" });
-      var cube = new THREE.Mesh(geometry, material);
+      var material = new THREE.MeshStandardMaterial({
+        color: "#2DB1A4",
+        emissive: "#2DB1A4",
+        emissiveIntensity: 0.5,
+      });
+
+      function makeCuboid(material) {
+        var geometry = new THREE.BoxGeometry(1, 3, 1);
+        return new THREE.Mesh(geometry, material);
+      }
+
+      function makeCorner(material) {
+        var geometry = new THREE.ExtrudeGeometry(
+          new THREE.Shape([
+            new THREE.Vector2(-1, -1),
+            new THREE.Vector2(-1, 1),
+            new THREE.Vector2(0, 1),
+            new THREE.Vector2(0, 0),
+            new THREE.Vector2(1, 0),
+            new THREE.Vector2(1, -1),
+          ]),
+          {
+            amount: 1,
+            bevelEnabled: false,
+          }
+        );
+        return new THREE.Mesh(geometry, material);
+      }
+
+      function makeTriangle(material) {
+        var geometry = new THREE.ExtrudeGeometry(
+          new THREE.Shape([
+            new THREE.Vector2(-0.7, -0.65),
+            new THREE.Vector2(0, 0.65),
+            new THREE.Vector2(0.7, -0.65),
+          ]),
+          {
+            amount: 1,
+            bevelEnabled: false,
+          }
+        );
+        return new THREE.Mesh(geometry, material);
+      }
+
+      function makeSemiCircle(material) {
+        var cylinder = new THREE.CylinderGeometry(
+          1,
+          1,
+          1,
+          32,
+          1,
+          false,
+          Math.PI / 2,
+          Math.PI
+        );
+
+        var plane = new THREE.PlaneGeometry(2, 1, 32);
+        var geometry = new THREE.Geometry();
+        var cylinderMesh = new THREE.Mesh(cylinder);
+        var planeMesh = new THREE.Mesh(plane);
+        cylinderMesh.updateMatrix(); // as needed
+        geometry.merge(cylinderMesh.geometry, cylinderMesh.matrix);
+
+        planeMesh.updateMatrix(); // as needed
+        geometry.merge(planeMesh.geometry, planeMesh.matrix);
+
+        return new THREE.Mesh(geometry, material);
+      }
+
+      // select random number between 0 and 4
+
+      function randomShape() {
+        const random = Math.floor(Math.random() * 4);
+        switch (random) {
+          case 0:
+            return makeTriangle(material);
+          case 1:
+            return makeCuboid(material);
+          case 2:
+            return makeCorner(material);
+          case 3:
+            return makeSemiCircle(material);
+        }
+      }
+
+      var outlier = randomShape();
+
+      outlier.position.set(2, 2, -5);
 
       // Add cube to Scene
-      scene.add(cube);
+      scene.add(outlier);
+
+      // Lights
+      const botLight = new THREE.PointLight(0x9f5f9c);
+      botLight.position.set(0, -10, -5);
+      botLight.intensity = 0.8;
+      const topLight = new THREE.PointLight(0xdcb229);
+      topLight.position.set(0, 10, 5);
+      topLight.intensity = 0.8;
+
+      const ambientLight = new THREE.AmbientLight(0xffffff);
+      // make like more intense
+      ambientLight.intensity = 0.5;
+      scene.add(botLight, topLight, ambientLight);
+
+      function generateStar() {
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshStandardMaterial({ color: "#231f20" });
+        const star = new THREE.Mesh(geometry, material);
+
+        star.position.set(
+          THREE.Math.randFloatSpread(50),
+          THREE.Math.randFloatSpread(100),
+          THREE.Math.randFloat(-20, 0)
+        );
+        star.rotation.x = Math.random() * 2 * Math.PI;
+
+        return star;
+      }
+
+      const stars = Array(1000).fill().map(generateStar);
+      stars.forEach((star) => scene.add(star));
 
       // Render Loop
       var render = function () {
         requestAnimationFrame(render);
+        const t = document.body.getBoundingClientRect().top;
+        outlier.rotation.x += 0.01;
+        outlier.rotation.y += 0.01;
+        outlier.position.y = t * 0.005;
 
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
+        // rotates stars
+        stars.forEach((star) => {
+          star.rotation.x += 0.005;
+          star.rotation.y += 0.005;
+        });
+
+        camera.position.y = t * +0.01;
 
         // Render the scene
         renderer.render(scene, camera);
