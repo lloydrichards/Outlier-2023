@@ -1,0 +1,120 @@
+body {
+  margin: 0;
+}
+
+#bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+#autoplay {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 1;
+  height: 1.5rem;
+  width: 1.5rem;
+  accent-color: #000;
+}
+
+#autoplay-label {
+  position: fixed;
+  bottom: 1rem;
+  right: 3rem;
+  z-index: 1;
+  color: white;
+  font: 1.2rem Inconsolata, monospace;
+}
+
+.half {
+  width: 50%;
+  display: inline-block;
+  vertical-align: top;
+}
+.committee ul {
+  padding-inline-start: 0;
+}
+.committee li {
+  list-style: none;
+  font-size: 1rem;
+}
+.committee i {
+  font-size: 1rem;
+}
+.committee a {
+  color: #231f20;
+}
+.committee a:hover {
+  color: #f1edea;
+}
+
+.card-turquoise {
+  background-color: #2db1a4;
+  color: #231f20;
+  padding: 2rem 2rem;
+  border-width: 4px 8px 8px 4px;
+  border-color: #231f20;
+  border-style: solid;
+  border-radius: 1rem;
+
+  a {
+    color: #231f20;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+}
+
+.card-plum {
+  background-color: #9f5f9c;
+  color: #f1edea;
+  padding: 2rem 2rem;
+  border-width: 4px 8px 8px 4px;
+  border-color: #231f20;
+  border-style: solid;
+  border-radius: 1rem;
+
+  a {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+}
+
+.card-mustard {
+  background-color: #dcb229;
+  color: #231f20;
+  padding: 2rem 2rem;
+  border-width: 4px 8px 8px 4px;
+  border-color: #231f20;
+  border-style: solid;
+  border-radius: 1rem;
+
+  a {
+    color: #231f20;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+}
+
+.card-white {
+  background-color: #f1edea;
+  color: #231f20;
+  padding: 2rem 2rem;
+  border-width: 4px 8px 8px 4px;
+  border-color: #231f20;
+  border-style: solid;
+  border-radius: 1rem;
+
+  a {
+    color: #9f5f9c;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+}
+.tight {
+  p {
+    margin: 0;
+    padding: 0;
+  }
+}
